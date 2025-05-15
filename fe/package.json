@@ -20,6 +20,8 @@
     "axios": "^1.8.4",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.6.3",
+    "lucide-react": "^0.487.0",
     "path": "^0.12.7",
     "prettier": "^3.5.3",
     "react": "^19.0.0",
@@ -29,6 +31,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.4.1",
     "sonner": "^2.0.3",
+    "swiper": "^11.2.6",
     "vite-plugin-svgr": "^4.3.0",
     "zod": "^3.24.2"
   },
