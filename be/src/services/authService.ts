@@ -83,7 +83,8 @@ export const loginUser = async (email: string, password: string) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      roleName: roleName // Thêm tên vai trò
+      roleName: roleName, // Thêm tên vai trò,
+      avatar: user.avatar
     },
     tokens: {
       accessToken,
