@@ -9,9 +9,7 @@ interface RegisterData {
   address?: string;
   dateOfBirth?: string;
 }
-interface ValidateCurrentPasswordData {
-  currentPassword: string;
-}
+
 // Interceptor để thêm token vào header cho các request
 apiClient.interceptors.request.use(
   (config) => {
@@ -169,20 +167,20 @@ export const authService = {
     currentPassword: string,
   ): Promise<{ message: string }> => {
     try {
-      const response = await apiClient.post("/api/auth/validate-current-password", {
-        currentPassword,
-      });
+      const response = await apiClient.post(
+        "/api/auth/validate-current-password",
+        {
+          currentPassword,
+        },
+      );
       return response.data;
     } catch (error: any) {
       if (error.response) {
-        throw new Error(error.response.data.message || "Xác thực mật khẩu thất bại");
+        throw new Error(
+          error.response.data.message || "Xác thực mật khẩu thất bại",
+        );
       }
       throw new Error("Đã xảy ra lỗi. Vui lòng thử lại sau");
     }
   },
-  
-
-  
 };
-
-

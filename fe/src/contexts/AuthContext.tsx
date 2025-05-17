@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { apiClient } from "~/services/api";
+import { apiClient } from "../services/api";
 import { useNavigate, NavigateFunction } from "react-router-dom";
-import { authService } from "~/services/authService";
+import { authService } from "../services/authService";
 
 interface User {
   id: string;
@@ -68,7 +68,7 @@ export const AuthProvider: React.FC<{
 
           // Fetch current user data
           const response = await authService.getCurrentUser();
-         
+
           setUser(response.data); // Assuming your API returns user data in response.data
           setIsAuthenticated(true);
         }
@@ -95,16 +95,20 @@ export const AuthProvider: React.FC<{
         email,
         password,
       });
-
+   
       // Update to match backend response structure
       const { accessToken, refreshToken } = response.data.data.tokens;
+    
       const userData = response.data.data.user;
-
+      setUser(userData);
+    
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
       setToken(accessToken);
-      setUser(userData);
+      
+      
       setIsAuthenticated(true);
+        console.log('isAuthenticated',isAuthenticated)
       navigate("/");
     } catch (error) {
       console.error("Login failed:", error);

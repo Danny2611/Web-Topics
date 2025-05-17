@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { LucideEye, LucideEyeOff } from "lucide-react";
-import { useAuth } from "~/contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { authService } from "~/services/authService";
+import { authService } from "../../services/authService";
 
 interface LocationState {
   from?: {
@@ -58,7 +58,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
+    <div className="mt-32 flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-md dark:bg-gray-800 dark:shadow-lg">
         <div className="text-center">
           <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">
