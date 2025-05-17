@@ -1,10 +1,10 @@
 
 // src/controller/user/memberController
 import { Request, Response } from 'express';
-import Member from '../../models/Member';
+import Member from '~/models/Member';
 import { validationResult } from 'express-validator';
-import { uploadFile,deleteFile } from '../../middlewares/uploadFile';
-import { validateMemberUpdate } from '../../utils/validators/memberValidator';
+import { uploadFile,deleteFile } from '~/middlewares/uploadFile';
+import { validateMemberUpdate } from '~/utils/validators/memberValidator';
 
 interface AuthRequest extends Request {
   userId?: string;
