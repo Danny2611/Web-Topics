@@ -1,3 +1,4 @@
+
 import Login from "~/pages/auth/Login";
 import Home from "../pages/public/Home/Home";
 import Register from "~/pages/auth/Register";
@@ -13,6 +14,6 @@ const publicRoutes = [
   { path: "forgot-password", element: <ForgotPassword /> },
   { path: "verify-otp", element: <VerifyOTP /> },
   { path: "oauth/callback", element: <OAuthCallback /> },
-];
+
 
 export default publicRoutes;

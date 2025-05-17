@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useAuth } from "~/contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { useLocation, Link } from "react-router-dom";
-import { authService } from "~/services/authService";
+import { authService } from "../../services/authService";
 
 const VerifyOTP: React.FC = () => {
   const [otp, setOtp] = useState("");

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { apiClient } from "~/services/api";
+import { apiClient } from "../services/api";
 import { useNavigate, NavigateFunction } from "react-router-dom";
-import { authService } from "~/services/authService";
+import { authService } from "../services/authService";
 
 interface User {
   id: string;
