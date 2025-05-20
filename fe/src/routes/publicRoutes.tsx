@@ -15,5 +15,5 @@ const publicRoutes = [
   { path: "verify-otp", element: <VerifyOTP /> },
   { path: "oauth/callback", element: <OAuthCallback /> },
 
-
+]
 export default publicRoutes;
