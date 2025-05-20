@@ -6,12 +6,12 @@ import Button from "../../../common/Button";
 
 const AboutSection: React.FC = () => {
   const features = [
-    "Expert certified trainers",
-    "Modern fitness equipment",
-    "Personalized training programs",
-    "Nutritional guidance",
-    "Clean and spacious facilities",
-    "Supportive community",
+    "Trang thiết bị hiện đại và đa dạng",
+    "Huấn luyện viên cá nhân chuyên nghiệp",
+    "Chương trình tập luyện cá nhân hóa",
+    "Tư vấn và theo dõi dinh dưỡng chuyên sâu",
+    "Không gian rộng rãi, sạch sẽ, thoải mái",
+    "Cộng đồng luyện tập năng động và tích cực",
   ];
 
   const containerVariants = {
@@ -45,7 +45,7 @@ const AboutSection: React.FC = () => {
               className="relative z-10"
             >
               <img
-                src="/images/about/about-main.jpg"
+                src="/images/about/story-accent.jpg"
                 alt="Fitness training"
                 className="h-auto w-full rounded-lg object-cover shadow-2xl"
               />
@@ -54,8 +54,6 @@ const AboutSection: React.FC = () => {
                 <div className="text-sm">YEARS OF EXPERIENCE</div>
               </div>
             </motion.div>
-            <div className="absolute -left-10 top-1/3 z-0 hidden h-24 w-24 rounded-full bg-[#0D2E4B] lg:block"></div>
-            <div className="absolute bottom-10 right-1/4 z-0 hidden h-16 w-16 rounded-full bg-[#0CC6F0] lg:block"></div>
           </div>
 
           {/* Content side */}
@@ -67,21 +65,22 @@ const AboutSection: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <h3 className="mb-3 text-lg font-bold tracking-wider text-[#0CC6F0]">
-                ABOUT OUR GYM
+                VỀ CHÚNG TÔI
               </h3>
               <h2 className="mb-6 text-3xl font-bold text-[#0D2E4B] md:text-4xl">
-                We Are Here To Build Your Perfect Body
+                Chúng Tôi Ở Đây Để Giúp Bạn Đạt Thể Hình Lý Tưởng
               </h2>
               <p className="mb-6 text-gray-600">
-                FittLife is a premier fitness center dedicated to helping you
-                achieve your health and wellness goals. With our
-                state-of-the-art facilities, expert trainers, and personalized
-                approach, we provide the perfect environment for transformation.
+                FittLife là trung tâm thể hình hàng đầu, cam kết đồng hành cùng
+                bạn trong hành trình nâng cao sức khỏe và vóc dáng. Với cơ sở
+                vật chất hiện đại, đội ngũ huấn luyện viên chuyên nghiệp và
+                phương pháp tiếp cận cá nhân hóa, chúng tôi mang đến môi trường
+                luyện tập lý tưởng.
               </p>
               <p className="mb-8 text-gray-600">
-                Whether you're looking to build muscle, lose weight, increase
-                your endurance, or simply maintain a healthy lifestyle, our team
-                is committed to supporting you every step of the way.
+                Dù mục tiêu của bạn là tăng cơ, giảm cân, cải thiện sức bền hay
+                đơn giản là duy trì lối sống lành mạnh, đội ngũ của chúng tôi sẽ
+                luôn hỗ trợ bạn một cách tận tâm và hiệu quả.
               </p>
 
               <motion.ul
@@ -104,7 +103,7 @@ const AboutSection: React.FC = () => {
               </motion.ul>
 
               <Link to="/about">
-                <Button size="large">Learn More About Us</Button>
+                <Button size="large">Tìm Hiểu Thêm Về Chúng Tôi</Button>
               </Link>
             </motion.div>
           </div>

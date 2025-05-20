@@ -14,36 +14,36 @@ interface ServiceProps {
 
 const services: ServiceProps[] = [
   {
-    id: "personal-training",
+    id: "pt-uu-tien",
     image: "/images/services/personal-training.jpg",
-    title: "Personal Training",
+    title: "Huấn luyện viên cá nhân",
     description:
-      "Get one-on-one attention from our expert trainers who will customize workouts to help you reach your specific fitness goals.",
-    link: "/services/personal-training",
+      "Được hỗ trợ 1-1 cùng HLV chuyên nghiệp, xây dựng lộ trình tập luyện phù hợp với mục tiêu cá nhân của bạn.",
+    link: "/services/pt-uu-tien",
   },
   {
-    id: "group-fitness",
-    image: "/images/services/group-fitness.jpg",
-    title: "Group Classes",
+    id: "lop-nhom",
+    image: "/images/services/group-fitness.JPG",
+    title: "Lớp nhóm năng động",
     description:
-      "Join our high-energy group classes, from HIIT to yoga, designed to motivate you and make fitness fun and social.",
-    link: "/services/group-classes",
+      "Tham gia các lớp cardio, HIIT hoặc yoga cùng huấn luyện viên trong môi trường vui vẻ và đầy năng lượng.",
+    link: "/services/lop-nhom",
   },
   {
-    id: "nutrition-coaching",
-    image: "/images/services/nutrition-coaching.jpg",
-    title: "Nutrition Coaching",
+    id: "dinh-duong",
+    image: "/images/services/nutrition-coaching.JPG",
+    title: "Tư vấn dinh dưỡng",
     description:
-      "Optimize your diet with personalized nutrition plans that complement your workout routine and lifestyle needs.",
-    link: "/services/nutrition-coaching",
+      "Tối ưu hiệu quả tập luyện với thực đơn dinh dưỡng cá nhân hóa phù hợp với thể trạng và mục tiêu.",
+    link: "/services/dinh-duong",
   },
   {
-    id: "strength-training",
-    image: "/images/services/strength-training.jpg",
-    title: "Strength Training",
+    id: "khu-vuc-vip",
+    image: "/images/services/strength-training.JPG",
+    title: "Khu vực tập luyện cao cấp",
     description:
-      "Build muscle, increase strength, and improve your body composition with our comprehensive strength training programs.",
-    link: "/services/strength-training",
+      "Tận hưởng không gian VIP, đầy đủ thiết bị hiện đại, spa, phòng hồi phục và nhiều tiện ích đặc quyền.",
+    link: "/services/khu-vuc-vip",
   },
 ];
 
@@ -73,9 +73,9 @@ const ServicesSection: React.FC = () => {
     <section className="bg-gray-50 py-20">
       <div className="container mx-auto px-4">
         <SectionTitle
-          title="Our Services"
-          subtitle="WHAT WE PROVIDE"
-          description="Discover our comprehensive range of fitness services designed to help you achieve optimal health and performance."
+          title="Dịch Vụ Nổi Bật"
+          subtitle="NHỮNG GÌ CHÚNG TÔI CUNG CẤP"
+          description="Khám phá các dịch vụ thể hình toàn diện giúp bạn đạt được mục tiêu sức khỏe và phong cách sống lý tưởng."
           centered
         />
 
@@ -104,12 +104,6 @@ const ServicesSection: React.FC = () => {
                   {service.title}
                 </h3>
                 <p className="mb-4 text-gray-600">{service.description}</p>
-                <Link
-                  to={service.link}
-                  className="inline-flex items-center font-medium text-[#0CC6F0] transition-colors hover:text-[#0D2E4B]"
-                >
-                  Learn More <FiArrowRight className="ml-2" />
-                </Link>
               </div>
             </motion.div>
           ))}
@@ -118,7 +112,7 @@ const ServicesSection: React.FC = () => {
         <div className="mt-12 text-center">
           <Link to="/services">
             <button className="rounded-md bg-[#0D2E4B] px-8 py-3 font-medium text-white transition-colors hover:bg-[#0CC6F0]">
-              View All Services
+              Xem tất cả dịch vụ
             </button>
           </Link>
         </div>
