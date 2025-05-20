@@ -3,12 +3,18 @@ import { Link, NavLink } from "react-router-dom";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import { BsFillTelephoneFill } from "react-icons/bs";
 import { IoMdMail } from "react-icons/io";
-import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaTwitter,
+  FaInstagram,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
 import classNames from "classnames";
 import { useScrollPosition } from "../../../hooks/useScrollPosition";
 import Button from "../../common/Button";
-// import RoleBasedDropdown from "~/components/dashboard/header/RoleBasedDropdown"; // Import UserDropdown
-// import { useAuth } from "../../../contexts/AuthContext";
+
+import { useAuth } from "../../../contexts/AuthContext";
+import RoleBasedDropdown from "~/compoments/dashboard/header/RoleBasedDropdown";
 
 interface NavItem {
   name: string;
@@ -20,23 +26,23 @@ const navItems: NavItem[] = [
   { name: "Home", path: "/" },
   {
     name: "About",
-    path: "/about",
-    children: [
-      { name: "Our Team", path: "/about/team" },
-      { name: "Our Story", path: "/about/story" },
-      { name: "Testimonials", path: "/about/testimonials" },
-    ],
+    path: "/about-us",
+    // children: [
+    //   { name: "About Us", path: "/about-us" },
+    //   { name: "Our Story", path: "/about/story" },
+    //   { name: "Testimonials", path: "/about/testimonials" },
+    // ],
   },
   {
     name: "Services",
     path: "/services",
     children: [
       { name: "Personal Training", path: "/services/personal-training" },
-      { name: "Group Classes", path: "/services/group-classes" },
+      { name: "Group Classes", path: "/services" },
       { name: "Nutrition Plans", path: "/services/nutrition-plans" },
     ],
   },
-  { name: "Schedule", path: "/schedule" },
+  // { name: "Schedule", path: "/schedule" },
   { name: "Blog", path: "/blog" },
   { name: "Contact", path: "/contact" },
 ];
@@ -45,7 +51,8 @@ const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const scrollPosition = useScrollPosition();
-  // const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -70,43 +77,52 @@ const Header: React.FC = () => {
       className={classNames(
         "fixed left-0 right-0 top-0 z-50 transition-all duration-300",
         {
-          "bg-white shadow-md": scrollPosition > 50 || mobileMenuOpen,
-          "bg-transparent": scrollPosition <= 50 && !mobileMenuOpen,
+          "bg-white shadow-md dark:bg-gray-900 dark:shadow-gray-800":
+            scrollPosition > 50 || mobileMenuOpen,
+          "bg-gradient-to-b from-black/70 to-transparent":
+            scrollPosition <= 50 && !mobileMenuOpen, // Changed from transparent to gradient
         },
       )}
     >
-      {/* Top Bar */}
-      <div className="hidden bg-[#0D2E4B] py-2 text-white md:block">
-        <div className="container mx-auto flex items-center justify-between px-4">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center text-sm">
-              <BsFillTelephoneFill className="mr-2" />
-              <span>+1 800 123 4567</span>
+      {/* Top Bar - Only show on desktop */}
+      <div className="hidden md:block">
+        <div className="bg-[#111] py-5 text-white dark:bg-gray-950">
+          <div className="container mx-auto flex items-center justify-between px-4">
+            {/* Logo/Slogan */}
+            <div className="hidden items-center md:flex">
+              <span className="text-blue-600">⚡</span>
+              <span className="ml-2 text-sm font-medium">
+                Eat, Sleep, Gym & Repeat
+              </span>
             </div>
-            <div className="flex items-center text-sm">
-              <IoMdMail className="mr-2" />
-              <span>info@fittlife.com</span>
+
+            {/* Center Contact */}
+            <div className="mx-auto hidden items-center space-x-6 md:flex">
+              <div className="flex items-center text-sm">
+                <BsFillTelephoneFill className="mr-2 text-gray-400" />
+                <span>Message Us: + (123) 456-7890</span>
+              </div>
+              <div className="flex items-center text-sm">
+                <FaMapMarkerAlt className="mr-2 text-gray-400" />
+                <span>123 Linh Xuân, thành phố Thủ Đức, Hồ Chí Minh.</span>
+              </div>
             </div>
-          </div>
-          <div className="flex space-x-3">
-            <a
-              href="https://facebook.com"
-              className="transition-colors hover:text-[#0CC6F0]"
-            >
-              <FaFacebookF />
-            </a>
-            <a
-              href="https://twitter.com"
-              className="transition-colors hover:text-[#0CC6F0]"
-            >
-              <FaTwitter />
-            </a>
-            <a
-              href="https://instagram.com"
-              className="transition-colors hover:text-[#0CC6F0]"
-            >
-              <FaInstagram />
-            </a>
+
+            {/* Right Navigation */}
+            <div className="hidden items-center space-x-6 md:flex">
+              <Link
+                to="/user/packages"
+                className="text-sm transition-colors hover:text-blue-600"
+              >
+                Join Membership
+              </Link>
+              <Link
+                to="/#"
+                className="text-sm transition-colors hover:text-blue-600"
+              >
+                Get Theme →
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -114,19 +130,21 @@ const Header: React.FC = () => {
       {/* Main Header */}
       <div className="container mx-auto flex items-center justify-between px-4 py-4">
         {/* Logo */}
-        <Link to="/" className="z-10">
-          <img
-            src="/images/logo-main.png"
-            alt="FittLife"
-            className="h-12 md:h-16"
-            style={{
-              filter:
-                scrollPosition <= 50 && !mobileMenuOpen
-                  ? "brightness(0) invert(1)"
-                  : "none",
-            }}
-          />
-        </Link>
+        {!mobileMenuOpen && (
+          <Link to="/" className="z-10">
+            <img
+              src="/images/logo-main.png"
+              alt="FittLife"
+              className="h-12 md:h-16"
+              style={{
+                filter:
+                  scrollPosition <= 50 && !mobileMenuOpen
+                    ? "brightness(0) invert(1)"
+                    : "none",
+              }}
+            />
+          </Link>
+        )}
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center lg:flex">
@@ -137,10 +155,11 @@ const Header: React.FC = () => {
                   <>
                     <button
                       className={classNames(
-                        "flex items-center text-lg font-semibold",
+                        "flex items-center text-lg font-semibold transition-colors",
                         {
-                          "text-white": scrollPosition <= 50 && !mobileMenuOpen,
-                          "text-[#0D2E4B] hover:text-[#0CC6F0]":
+                          "text-white hover:text-blue-400":
+                            scrollPosition <= 50 && !mobileMenuOpen,
+                          "text-[#0D2E4B] hover:text-blue-600 dark:text-white dark:hover:text-blue-400":
                             scrollPosition > 50 || mobileMenuOpen,
                         },
                       )}
@@ -162,7 +181,7 @@ const Header: React.FC = () => {
                         />
                       </svg>
                     </button>
-                    <div className="invisible absolute left-0 mt-2 w-48 rounded-md bg-white opacity-0 shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 group-hover:visible group-hover:opacity-100">
+                    <div className="invisible absolute left-0 mt-2 w-48 rounded-md bg-white opacity-0 shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 group-hover:visible group-hover:opacity-100 dark:bg-gray-800">
                       <div className="py-1">
                         {item.children.map((child) => (
                           <NavLink
@@ -170,8 +189,11 @@ const Header: React.FC = () => {
                             to={child.path}
                             className={({ isActive }) =>
                               classNames(
-                                "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100",
-                                { "bg-gray-100": isActive },
+                                "block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-600 dark:text-gray-200 dark:hover:bg-blue-900 dark:hover:text-blue-300",
+                                {
+                                  "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300":
+                                    isActive,
+                                },
                               )
                             }
                           >
@@ -185,13 +207,24 @@ const Header: React.FC = () => {
                   <NavLink
                     to={item.path}
                     className={({ isActive }) =>
-                      classNames("text-lg font-semibold", {
-                        "text-white":
-                          scrollPosition <= 50 && !mobileMenuOpen && !isActive,
-                        "text-[#0D2E4B] hover:text-[#0CC6F0]":
-                          scrollPosition > 50 || mobileMenuOpen || isActive,
-                        "text-[#0CC6F0]": isActive,
-                      })
+                      classNames(
+                        "relative text-lg font-semibold transition-colors",
+                        {
+                          "text-white hover:text-blue-400":
+                            scrollPosition <= 50 &&
+                            !mobileMenuOpen &&
+                            !isActive,
+                          "text-blue-400 after:absolute after:bottom-[-8px] after:left-0 after:h-1 after:w-full after:bg-blue-600":
+                            scrollPosition <= 50 && !mobileMenuOpen && isActive,
+                          "text-[#0D2E4B] hover:text-blue-600 dark:text-white dark:hover:text-blue-400":
+                            scrollPosition > 50 ||
+                            mobileMenuOpen ||
+                            (isActive && scrollPosition > 50),
+                          "text-blue-600 after:absolute after:bottom-[-8px] after:left-0 after:h-1 after:w-full after:bg-blue-600 dark:text-blue-400":
+                            (isActive && scrollPosition > 50) ||
+                            (isActive && mobileMenuOpen),
+                        },
+                      )
                     }
                   >
                     {item.name}
@@ -200,7 +233,7 @@ const Header: React.FC = () => {
               </li>
             ))}
           </ul>
-          {/* {isAuthenticated ? (
+          {isAuthenticated ? (
             <div className="ml-16">
               <RoleBasedDropdown />
             </div>
@@ -210,53 +243,60 @@ const Header: React.FC = () => {
               to="/login"
               variant="primary"
               size="medium"
-              className="ml-16 bg-[#0CC6F0] hover:bg-[#0AB5DC]"
+              className="ml-16 bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
             >
               Đăng nhập
             </Button>
-          )} */}
+          )}
         </nav>
 
         {/* Mobile Menu Button */}
-        <button
-          onClick={toggleMobileMenu}
-          className="z-10 lg:hidden"
-          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-        >
-          {mobileMenuOpen ? (
-            <HiOutlineX className="h-6 w-6 text-[#0D2E4B]" />
+        <div className="flex items-center space-x-4 lg:hidden">
+          <button
+            onClick={toggleMobileMenu}
+            className="z-10"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+          >
+            {mobileMenuOpen ? (
+              <HiOutlineX className="h-6 w-6 text-[#0D2E4B] dark:text-white" />
+            ) : (
+              <HiOutlineMenu
+                className={classNames("h-6 w-6", {
+                  "text-white": scrollPosition <= 50,
+                  "text-[#0D2E4B] dark:text-white": scrollPosition > 50,
+                })}
+              />
+            )}
+          </button>
+
+          {/* Login button for mobile */}
+          {isAuthenticated ? (
+            <div className="ml-4">
+              <RoleBasedDropdown />
+            </div>
           ) : (
-            <HiOutlineMenu
-              className={classNames("h-6 w-6", {
-                "text-white": scrollPosition <= 50,
-                "text-[#0D2E4B]": scrollPosition > 50,
-              })}
-            />
+            <Button
+              as={Link}
+              to="/login"
+              variant="primary"
+              size="small"
+              className="ml-4 bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+            >
+              Đăng nhập
+            </Button>
           )}
-        </button>
+        </div>
 
         {/* Mobile Menu */}
         <div
           className={classNames(
-            "fixed inset-0 flex flex-col bg-white transition-all duration-300 lg:hidden",
+            "fixed inset-0 flex flex-col bg-white transition-all duration-300 dark:bg-gray-900 lg:hidden",
             {
               "visible opacity-100": mobileMenuOpen,
               "invisible opacity-0": !mobileMenuOpen,
             },
           )}
         >
-          <div className="container mx-auto flex items-center justify-between px-4 py-4">
-            <Link to="/" className="z-10">
-              <img src="/images/logo.png" alt="FittLife" className="h-12" />
-            </Link>
-            <button
-              onClick={toggleMobileMenu}
-              className="z-10"
-              aria-label="Close menu"
-            >
-              <HiOutlineX className="h-6 w-6 text-[#0D2E4B]" />
-            </button>
-          </div>
           <div className="flex flex-1 flex-col items-center justify-center overflow-auto py-10">
             <ul className="w-full max-w-sm space-y-6 px-4">
               {navItems.map((item) => (
@@ -264,7 +304,7 @@ const Header: React.FC = () => {
                   {item.children ? (
                     <div>
                       <button
-                        className="flex w-full items-center justify-between text-left text-xl font-semibold text-[#0D2E4B]"
+                        className="flex w-full items-center justify-between text-left text-xl font-semibold text-[#0D2E4B] dark:text-white"
                         onClick={() => toggleDropdown(item.name)}
                       >
                         {item.name}
@@ -304,8 +344,9 @@ const Header: React.FC = () => {
                             to={child.path}
                             className={({ isActive }) =>
                               classNames("block py-2 text-lg font-medium", {
-                                "text-[#0CC6F0]": isActive,
-                                "text-gray-700 hover:text-[#0CC6F0]": !isActive,
+                                "text-blue-600 dark:text-blue-400": isActive,
+                                "text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400":
+                                  !isActive,
                               })
                             }
                             onClick={toggleMobileMenu}
@@ -320,8 +361,9 @@ const Header: React.FC = () => {
                       to={item.path}
                       className={({ isActive }) =>
                         classNames("block text-xl font-semibold", {
-                          "text-[#0CC6F0]": isActive,
-                          "text-[#0D2E4B] hover:text-[#0CC6F0]": !isActive,
+                          "text-blue-600 dark:text-blue-400": isActive,
+                          "text-[#0D2E4B] hover:text-blue-600 dark:text-white dark:hover:text-blue-400":
+                            !isActive,
                         })
                       }
                       onClick={toggleMobileMenu}
@@ -331,42 +373,45 @@ const Header: React.FC = () => {
                   )}
                 </li>
               ))}
-              <li className="mt-8">
-                {/* {isAuthenticated ? (
-                  <div className="flex justify-center">
-                    <RoleBasedDropdown />
-                  </div>
-                ) : (
-                  <Button
-                    fullWidth
-                    onClick={() => {
-                      window.location.href = "/login";
-                      toggleMobileMenu();
-                    }}
-                  >
-                    Đăng nhập
-                  </Button>
-                )} */}
-              </li>
+
               <li className="mt-8 flex justify-center space-x-6">
                 <a
                   href="https://facebook.com"
-                  className="text-xl text-[#0D2E4B] hover:text-[#0CC6F0]"
+                  className="text-xl text-[#0D2E4B] hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                  aria-label="Facebook"
                 >
                   <FaFacebookF />
                 </a>
                 <a
                   href="https://twitter.com"
-                  className="text-xl text-[#0D2E4B] hover:text-[#0CC6F0]"
+                  className="text-xl text-[#0D2E4B] hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                  aria-label="Twitter"
                 >
                   <FaTwitter />
                 </a>
                 <a
                   href="https://instagram.com"
-                  className="text-xl text-[#0D2E4B] hover:text-[#0CC6F0]"
+                  className="text-xl text-[#0D2E4B] hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                  aria-label="Instagram"
                 >
                   <FaInstagram />
                 </a>
+              </li>
+
+              {/* Mobile Contact Information */}
+              <li className="mt-8 text-center">
+                <div className="mb-2 flex items-center justify-center text-sm">
+                  <BsFillTelephoneFill className="mr-2 text-blue-600 dark:text-blue-400" />
+                  <span className="text-[#0D2E4B] dark:text-white">
+                    + (02) 125 789 020
+                  </span>
+                </div>
+                <div className="flex items-center justify-center text-sm">
+                  <FaMapMarkerAlt className="mr-2 text-blue-600 dark:text-blue-400" />
+                  <span className="text-[#0D2E4B] dark:text-white">
+                    3592 Oakwood Avenue, New York
+                  </span>
+                </div>
               </li>
             </ul>
           </div>
