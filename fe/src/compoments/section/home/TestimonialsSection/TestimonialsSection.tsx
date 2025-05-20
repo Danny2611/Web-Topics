@@ -3,9 +3,11 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { FaQuoteLeft } from "react-icons/fa";
 import SectionTitle from "../../../common/SectionTitle";
+import { motion } from "framer-motion";
 
 // Import Swiper styles
 import "swiper/swiper-bundle.css";
+
 interface TestimonialProps {
   id: number;
   name: string;
@@ -19,37 +21,37 @@ const testimonials: TestimonialProps[] = [
   {
     id: 1,
     name: "Sarah Johnson",
-    role: "Fitness Enthusiast",
-    image: "/images/testimonials/testimonial-1.jpg",
+    role: "Người đam mê thể hình",
+    image: "/images/testimonials/testimonial-1.JPG",
     quote:
-      "FittLife has completely transformed my approach to fitness. The trainers are knowledgeable and supportive, always pushing me to achieve more while ensuring my technique is correct. I have lost 25 pounds and gained so much confidence!",
+      "FittLife đã thay đổi hoàn toàn cách tôi tiếp cận việc tập luyện. Các huấn luyện viên luôn tận tâm, hỗ trợ tôi đúng kỹ thuật và động viên tôi vượt qua giới hạn. Tôi đã giảm được 11kg và tự tin hơn rất nhiều!",
     rating: 5,
   },
   {
     id: 2,
     name: "Michael Chen",
-    role: "Marathon Runner",
+    role: "Vận động viên marathon",
     image: "/images/testimonials/testimonial-2.jpg",
     quote:
-      "As a marathon runner, I needed specific training to improve my performance. The personalized program created by the FittLife team helped me shave 15 minutes off my personal best. The facilities are top-notch and the community is incredibly supportive.",
+      "Là người chạy marathon, tôi cần một chương trình chuyên sâu để nâng cao thành tích. Chương trình cá nhân hoá từ FittLife giúp tôi cải thiện kỷ lục cá nhân tới 15 phút. Cơ sở vật chất đỉnh cao, cộng đồng thân thiện.",
     rating: 5,
   },
   {
     id: 3,
     name: "Emma Rodriguez",
-    role: "Working Professional",
-    image: "/images/testimonials/testimonial-3.jpg",
+    role: "Nhân viên văn phòng",
+    image: "/images/testimonials/testimonial-3.JPG",
     quote:
-      "With my busy schedule, I needed a gym that offered flexible hours and effective workouts. FittLife exceeded my expectations with their varied class schedule and efficient training sessions. I am seeing results despite my limited time!",
+      "Với lịch làm việc bận rộn, tôi cần phòng tập linh hoạt và hiệu quả. Lịch lớp tại FittLife rất đa dạng, buổi tập ngắn nhưng cực kỳ hiệu quả. Dù không có nhiều thời gian, tôi vẫn thấy rõ kết quả sau mỗi tuần.",
     rating: 4,
   },
   {
     id: 4,
     name: "David Wilson",
-    role: "Strength Training Advocate",
-    image: "/images/testimonials/testimonial-4.jpg",
+    role: "Người tập luyện sức mạnh",
+    image: "/images/testimonials/testimonial-4.JPG",
     quote:
-      "The strength training programs at FittLife are comprehensive and challenging. In just six months, Ihave increased my deadlift by 100 pounds and built significant muscle mass. The trainers know exactly how to push you to your limits safely.",
+      "Chương trình tập sức mạnh tại FittLife rất bài bản và thử thách. Sau 6 tháng, tôi đã tăng mức deadlift lên thêm 45kg và phát triển cơ bắp rõ rệt. Huấn luyện viên cực kỳ chuyên môn và luôn đảm bảo an toàn.",
     rating: 5,
   },
 ];
@@ -78,9 +80,9 @@ const TestimonialsSection: React.FC = () => {
     <section className="bg-[#0D2E4B] py-20 text-white">
       <div className="container mx-auto px-4">
         <SectionTitle
-          title="What Our Clients Say"
-          subtitle="TESTIMONIALS"
-          description="Hear from the people who have transformed their lives through our fitness programs."
+          title="Khách Hàng Nói Gì Về Chúng Tôi"
+          subtitle="CẢM NHẬN THỰC TẾ"
+          description="Lắng nghe trải nghiệm của những học viên đã thay đổi cuộc sống cùng các chương trình tập luyện tại FittLife."
           centered
         />
 
@@ -90,15 +92,9 @@ const TestimonialsSection: React.FC = () => {
             spaceBetween={30}
             slidesPerView={1}
             breakpoints={{
-              640: {
-                slidesPerView: 1,
-              },
-              768: {
-                slidesPerView: 2,
-              },
-              1024: {
-                slidesPerView: 3,
-              },
+              640: { slidesPerView: 1 },
+              768: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 },
             }}
             autoplay={{
               delay: 5000,
@@ -119,32 +115,38 @@ const TestimonialsSection: React.FC = () => {
           >
             {testimonials.map((testimonial) => (
               <SwiperSlide key={testimonial.id}>
-                <div className="flex h-full flex-col rounded-lg bg-white p-8 text-gray-800 shadow-lg">
-                  <div className="mb-6 flex items-center">
-                    <div className="mr-4 h-16 w-16 overflow-hidden rounded-full">
-                      <img
-                        src={testimonial.image}
-                        alt={testimonial.name}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-bold text-[#0D2E4B]">
-                        {testimonial.name}
-                      </h4>
-                      <p className="text-gray-600">{testimonial.role}</p>
-                      <div className="mt-1 flex">
-                        {renderStars(testimonial.rating)}
+                <motion.div
+                  key={testimonial.id}
+                  className="overflow-hidden rounded-lg bg-white shadow-lg transition-transform hover:scale-105"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <div className="flex h-full flex-col rounded-lg bg-white p-8 text-gray-800 shadow-lg">
+                    <div className="mb-6 flex items-center">
+                      <div className="mr-4 h-16 w-16 overflow-hidden rounded-full">
+                        <img
+                          src={testimonial.image}
+                          alt={testimonial.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-bold text-[#0D2E4B]">
+                          {testimonial.name}
+                        </h4>
+                        <p className="text-gray-600">{testimonial.role}</p>
+                        <div className="mt-1 flex">
+                          {renderStars(testimonial.rating)}
+                        </div>
                       </div>
                     </div>
+                    <div className="relative flex-grow">
+                      <FaQuoteLeft className="absolute left-0 top-0 text-4xl text-[#0CC6F0] opacity-20" />
+                      <p className="relative z-10 pl-6 pt-4 text-gray-600">
+                        {testimonial.quote}
+                      </p>
+                    </div>
                   </div>
-                  <div className="relative flex-grow">
-                    <FaQuoteLeft className="absolute left-0 top-0 text-4xl text-[#0CC6F0] opacity-20" />
-                    <p className="relative z-10 pl-6 pt-4 text-gray-600">
-                      {testimonial.quote}
-                    </p>
-                  </div>
-                </div>
+                </motion.div>
               </SwiperSlide>
             ))}
           </Swiper>

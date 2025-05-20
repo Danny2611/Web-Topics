@@ -17,39 +17,39 @@ interface FeatureProps {
 const features: FeatureProps[] = [
   {
     icon: <GiWeightLiftingUp size={48} />,
-    title: "Strength Training",
+    title: "Trang thiết bị hiện đại",
     description:
-      "Build muscle and increase strength with our comprehensive strength training programs tailored to your fitness level.",
-  },
-  {
-    icon: <MdSportsGymnastics size={48} />,
-    title: "Group Classes",
-    description:
-      "Join our energetic group fitness classes led by expert instructors, designed to motivate and challenge you.",
-  },
-  {
-    icon: <GiHeartBeats size={48} />,
-    title: "Cardio Training",
-    description:
-      "Improve your cardiovascular health and endurance with our state-of-the-art cardio equipment and specialized programs.",
-  },
-  {
-    icon: <MdSportsMartialArts size={48} />,
-    title: "Functional Training",
-    description:
-      "Enhance your daily performance with functional exercises that improve strength, stability, and mobility.",
+      "Sử dụng đầy đủ các trang thiết bị hiện đại, từ cơ bản đến khu vực VIP, đáp ứng mọi nhu cầu luyện tập của bạn.",
   },
   {
     icon: <GiMuscleUp size={48} />,
-    title: "Personal Training",
+    title: "Huấn luyện cá nhân",
     description:
-      "Get personalized attention and custom workout plans from our certified personal trainers to achieve your goals faster.",
+      "Tập cùng huấn luyện viên cá nhân (PT) từ 2 đến 8 buổi mỗi tháng giúp bạn đạt hiệu quả tối ưu.",
   },
   {
     icon: <MdFoodBank size={48} />,
-    title: "Nutrition Guidance",
+    title: "Tư vấn dinh dưỡng",
     description:
-      "Complement your fitness routine with expert nutrition advice to optimize your results and overall health.",
+      "Tư vấn và xây dựng kế hoạch dinh dưỡng cá nhân hóa theo từng mục tiêu cụ thể của bạn.",
+  },
+  {
+    icon: <MdSportsGymnastics size={48} />,
+    title: "Lớp học nhóm cardio",
+    description:
+      "Tham gia không giới hạn các lớp cardio nhóm để cải thiện sức khỏe tim mạch và giảm cân hiệu quả.",
+  },
+  {
+    icon: <GiHeartBeats size={48} />,
+    title: "Đánh giá thể chất định kỳ",
+    description:
+      "Theo dõi tình trạng sức khỏe và hiệu quả luyện tập qua các buổi đánh giá thể chất định kỳ và chuyên sâu.",
+  },
+  {
+    icon: <MdSportsMartialArts size={48} />,
+    title: "Dịch vụ cao cấp",
+    description:
+      "Trải nghiệm dịch vụ spa định kỳ, ưu tiên đặt lịch PT và hỗ trợ riêng 24/7 cho các gói cao cấp.",
   },
 ];
 
@@ -79,9 +79,9 @@ const FeaturesSection: React.FC = () => {
     <section className="bg-gray-50 py-20">
       <div className="container mx-auto px-4">
         <SectionTitle
-          title="What We Offer"
-          subtitle="OUR FEATURES"
-          description="Discover our comprehensive range of fitness services designed to help you achieve your health and wellness goals."
+          title="Chúng Tôi Cung Cấp Gì"
+          subtitle="CÁC ĐẶC ĐIỂM NỔI BẬT"
+          description="Khám phá các dịch vụ thể hình toàn diện giúp bạn đạt được mục tiêu sức khỏe và thể chất một cách hiệu quả."
           centered
         />
 
