@@ -11,8 +11,10 @@ export interface IPackage extends Document {
   created_at: Date;
   deleted_at?: Date;
   updated_at: Date;
-  category?: 'basic' | 'premium' | 'specialized' | 'standard' | 'vip';
+  category?: 'basic' | 'fitness' | 'premium' | 'platinum' |'vip';
   popular?: boolean;
+  training_sessions?: number;
+  session_duration?: number;
 }
 
 const packageSchema: Schema = new Schema({
@@ -28,12 +30,22 @@ const packageSchema: Schema = new Schema({
   updated_at: { type: Date, default: Date.now },
   category: { 
     type: String, 
-    enum: ['basic', 'premium', 'specialized', 'standard', 'vip'],
+    enum: ['basic' , 'fitness', 'premium' ,'platinum', 'vip'],
     default: 'basic'
   },
   popular: { 
     type: Boolean, 
     default: false 
+  },
+  training_sessions: { 
+    type: Number, 
+    default: 0, 
+    description: 'Số buổi tập với PT mỗi tháng' 
+  },
+  session_duration: { 
+    type: Number, 
+    default: 60, 
+    description: 'Thời lượng mỗi buổi tập (phút)' 
   }
 });
 

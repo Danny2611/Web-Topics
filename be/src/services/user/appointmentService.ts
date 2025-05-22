@@ -1,20 +1,13 @@
 // services/appointmentService.ts
-import Appointment, { IAppointment } from '../models/Appointment';
-import Membership, { IMembership } from '../models/Membership';
-import Package, { IPackage } from '../models/Package';
-import Trainer, { ITrainer, ISchedule } from '../models/Trainer';
+import Appointment, { IAppointment } from '~/models/Appointment';
+import Membership, { IMembership } from '~/models/Membership';
+import Package, { IPackage } from '~/models/Package';
+import Trainer, { ITrainer, ISchedule } from '~/models/Trainer';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import cron from 'node-cron';
 import { Types } from 'mongoose';
+import { UpcomingAppointment } from '~/types/appointment';
 
-
-interface AppointmentFilters {
-  status?: 'confirmed' | 'pending' | 'cancelled' | 'completed' | 'missed';
-  startDate?: Date | string;
-  endDate?: Date | string;
-  date?: Date | string;
- 
-}
 
 interface MemberScheduleFilters {
   status?: 'confirmed' | 'pending' | 'cancelled' | 'completed' | 'missed';
@@ -44,6 +37,57 @@ interface RescheduleAppointmentData {
   location?: string;
   notes?: string;
 }
+
+// Tạo lịch hẹn mới
+const createAppointment = async (appointmentData: CreateAppointmentData): Promise<IAppointment> => {
+  const { member_id, trainer_id, membership_id, date, startTime, endTime, location, notes } = appointmentData;
+  
+  const membership = await checkAndUpdateAvailableSessions(membership_id);
+  const isAvailable = await isTrainerAvailable(trainer_id, date, startTime, endTime);
+  if (!isAvailable) {
+    throw new Error('Trainer is not available at the selected time');
+  }
+  
+  const appointment = new Appointment({
+    member_id,
+    trainer_id,
+    membership_id,
+    date,
+    time: {
+      start: startTime,
+      end: endTime
+    },
+    location,
+    notes,
+    status: 'pending'
+  });
+  
+  await appointment.save();
+
+  // Cập nhật workingHours của trainer
+  const trainer = await Trainer.findById(trainer_id);
+  if (trainer && trainer.schedule) {
+    const appointmentDate = new Date(date);
+    const dayOfWeek = appointmentDate.getDay(); // 0 - Sunday, 1 - Monday, etc.
+
+    const scheduleForDay = trainer.schedule.find(s => s.dayOfWeek === dayOfWeek && s.available);
+    if (scheduleForDay && scheduleForDay.workingHours) {
+      const targetSlot = scheduleForDay.workingHours.find(
+        (slot) => slot.start === startTime && slot.end === endTime
+      );
+      if (targetSlot) {
+        targetSlot.available = false;
+        await trainer.save(); // lưu trainer sau khi cập nhật
+      }
+    }
+  }
+
+  membership.available_sessions -= 1;
+  membership.used_sessions += 1;
+  await membership.save();
+  
+  return appointment;
+};
 
 // Helper function to categorize appointments into time slots
 // This matches the frontend time slots
@@ -154,44 +198,80 @@ const checkAndUpdateAvailableSessions = async (membershipId: Types.ObjectId): Pr
   return membership;
 };
 
-// Tạo lịch hẹn mới
-const createAppointment = async (appointmentData: CreateAppointmentData): Promise<IAppointment> => {
-  const { member_id, trainer_id, membership_id, date, startTime, endTime, location, notes } = appointmentData;
-  
-  // Kiểm tra gói tập và số buổi tập có sẵn
-  const membership = await checkAndUpdateAvailableSessions(membership_id);
-  
-  // Kiểm tra xem trainer có lịch trống không
-  const isAvailable = await isTrainerAvailable(trainer_id, date, startTime, endTime);
-  if (!isAvailable) {
-    throw new Error('Trainer is not available at the selected time');
-  }
-  
-  // Tạo appointment mới
-  const appointment = new Appointment({
-    member_id,
-    trainer_id,
-    membership_id,
-    date,
-    time: {
-      start: startTime,
-      end: endTime
-    },
-    location,
-    notes,
-    status: 'pending'
-  });
-  
-  await appointment.save();
-  
-  // Giảm số buổi tập có sẵn trong membership
-  membership.available_sessions -= 1;
-  membership.used_sessions += 1;
-  await membership.save();
-  
-  return appointment;
-};
 
+
+
+// Lấy tất cả lịch hẹn của member
+const getAllMemberAppointments = async (
+  memberId: Types.ObjectId | string,
+  filters: any = {}
+): Promise<any[]> => {
+  try {
+    // Convert string ID to ObjectId if needed
+    const memberObjectId = typeof memberId === 'string' 
+      ? new Types.ObjectId(memberId) 
+      : memberId;
+    
+    // Build query based on filters
+    const query: any = {
+      member_id: memberObjectId,
+    };
+    
+    // Add status filter if provided
+    if (filters.status) {
+      query.status = filters.status;
+    }
+    
+    // Add date range filter if provided
+    if (filters.startDate || filters.endDate) {
+      query.date = {};
+      if (filters.startDate) {
+        query.date.$gte = new Date(filters.startDate);
+      }
+      if (filters.endDate) {
+        query.date.$lte = new Date(filters.endDate);
+      }
+    }
+    
+    // Get appointments with populated data
+    let appointmentsQuery = Appointment.find(query)
+      .populate('trainer_id', 'name specialization image')
+      .populate('membership_id', 'package_id start_date end_date')
+      .populate({
+        path: 'membership_id.package_id',
+        select: 'name category'
+      })
+      .sort({ date: 1, 'time.start': 1 });
+    
+    // Handle search by trainer name or location
+    if (filters.searchTerm) {
+      const searchRegex = new RegExp(filters.searchTerm, 'i');
+      
+      // We need to use aggregation for text search across populated fields
+      const appointments = await appointmentsQuery.exec();
+      
+      return appointments
+        .filter(app => {
+          const trainerName = (app.trainer_id as any)?.name || '';
+          const location = app.location || '';
+          const notes = app.notes || '';
+          
+          return searchRegex.test(trainerName) || 
+                 searchRegex.test(location) || 
+                 searchRegex.test(notes);
+        })
+        .map(appointment => formatAppointmentForFrontend(appointment));
+    }
+    
+    const appointments = await appointmentsQuery.exec();
+    
+    // Transform appointments to match frontend model
+    return appointments.map(appointment => formatAppointmentForFrontend(appointment));
+  } catch (error) {
+    console.error('Error fetching member appointments:', error);
+    throw new Error('Failed to fetch member appointments');
+  }
+};
 // Lấy thông tin chi tiết của một lịch hẹn
 const getAppointmentById = async (appointmentId: Types.ObjectId): Promise<IAppointment | null> => {
   // Tìm lịch hẹn theo appointmentId
@@ -332,77 +412,6 @@ const getMemberSchedule = async (
   }
 };
 
-// Lấy tất cả lịch hẹn của member
-const getAllMemberAppointments = async (
-  memberId: Types.ObjectId | string,
-  filters: any = {}
-): Promise<any[]> => {
-  try {
-    // Convert string ID to ObjectId if needed
-    const memberObjectId = typeof memberId === 'string' 
-      ? new Types.ObjectId(memberId) 
-      : memberId;
-    
-    // Build query based on filters
-    const query: any = {
-      member_id: memberObjectId,
-    };
-    
-    // Add status filter if provided
-    if (filters.status) {
-      query.status = filters.status;
-    }
-    
-    // Add date range filter if provided
-    if (filters.startDate || filters.endDate) {
-      query.date = {};
-      if (filters.startDate) {
-        query.date.$gte = new Date(filters.startDate);
-      }
-      if (filters.endDate) {
-        query.date.$lte = new Date(filters.endDate);
-      }
-    }
-    
-    // Get appointments with populated data
-    let appointmentsQuery = Appointment.find(query)
-      .populate('trainer_id', 'name specialization image')
-      .populate('membership_id', 'package_id start_date end_date')
-      .populate({
-        path: 'membership_id.package_id',
-        select: 'name category'
-      })
-      .sort({ date: 1, 'time.start': 1 });
-    
-    // Handle search by trainer name or location
-    if (filters.searchTerm) {
-      const searchRegex = new RegExp(filters.searchTerm, 'i');
-      
-      // We need to use aggregation for text search across populated fields
-      const appointments = await appointmentsQuery.exec();
-      
-      return appointments
-        .filter(app => {
-          const trainerName = (app.trainer_id as any)?.name || '';
-          const location = app.location || '';
-          const notes = app.notes || '';
-          
-          return searchRegex.test(trainerName) || 
-                 searchRegex.test(location) || 
-                 searchRegex.test(notes);
-        })
-        .map(appointment => formatAppointmentForFrontend(appointment));
-    }
-    
-    const appointments = await appointmentsQuery.exec();
-    
-    // Transform appointments to match frontend model
-    return appointments.map(appointment => formatAppointmentForFrontend(appointment));
-  } catch (error) {
-    console.error('Error fetching member appointments:', error);
-    throw new Error('Failed to fetch member appointments');
-  }
-};
 
 // Hủy lịch hẹn
 const cancelAppointment = async (
@@ -577,6 +586,47 @@ export const initScheduledJobs = (): void => {
   });
 };
 
+// Lấy các lịch hẹn trong 7 ngày tới
+
+export async function getUpcomingAppointments(memberId: string): Promise<UpcomingAppointment[]> {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const nextWeek = new Date(today);
+    nextWeek.setDate(today.getDate() + 7);
+
+    const appointments = await Appointment.find({
+      member_id: new Types.ObjectId(memberId),
+      date: { $gte: today, $lt: nextWeek },
+      status: { $in: ['confirmed', 'pending'] },
+    }).sort({ date: 1, 'time.start': 1 });
+
+    const formattedAppointments: UpcomingAppointment[] = appointments.map(app => {
+      const [startHour, startMinute] = app.time.start.split(':').map(Number);
+      const [endHour, endMinute] = app.time.end.split(':').map(Number);
+
+      const timeStart = new Date(app.date);
+      timeStart.setHours(startHour, startMinute, 0, 0);
+
+      const timeEnd = new Date(app.date);
+      timeEnd.setHours(endHour, endMinute, 0, 0);
+
+      return {
+        date: app.date,
+        timeStart,
+        timeEnd,
+        location: app.location,
+        status: app.status === 'confirmed' ? 'upcoming' : app.status,
+      };
+    });
+
+    return formattedAppointments;
+  } catch (error) {
+    console.error('Lỗi khi lấy lịch hẹn sắp tới:', error);
+    throw new Error('Không thể lấy danh sách lịch hẹn sắp tới');
+  }
+}
 export default {
   createAppointment,
   getAllMemberAppointments,
@@ -585,5 +635,6 @@ export default {
   getAppointmentById,
   getMemberSchedule,
   rescheduleAppointment,
-  updateMissedAppointments
+  updateMissedAppointments,
+  getUpcomingAppointments
 };

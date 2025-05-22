@@ -372,3 +372,12 @@ export const deactivateAccount = async (req: AuthRequest, res: Response): Promis
     });
   }
 };
+
+export default {
+  deactivateAccount,
+  getMemberById,
+  updateEmail,
+  updateAvatar,
+  updateProfile,
+  getCurrentProfile
+}
