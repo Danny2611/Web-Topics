@@ -2,11 +2,11 @@
 import { Request, Response, NextFunction  } from 'express';
 import asyncHandler from 'express-async-handler';
 import { validationResult } from 'express-validator';
-import appointmentService from '../../services/appointmentService';
-import Trainer from '../../models/Trainer';
-import Membership from '../../models/Membership';
+import appointmentService from '~/services/user/appointmentService';
+import Trainer from '~/models/Trainer';
+import Membership from '~/models/Membership';
 import { Types } from 'mongoose';
-import { IAppointment } from 'src/models/Appointment';
+import { IAppointment } from '~/models/Appointment';
 
 interface AuthRequest extends Request {
   userId?: string;
@@ -482,6 +482,33 @@ export const checkTrainerAvailability = async (req: AuthRequest, res: Response):
     }
   };
 
+export const getUpcomingAppointments = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const memberId = req.userId;
+    
+    if (!memberId) {
+      res.status(401).json({
+        success: false,
+        message: 'Bạn cần đăng nhập để xem lịch hẹn tuần tới'
+      });
+      return;
+    }
+
+    const nextAppointmentLogData= await appointmentService.getUpcomingAppointments(memberId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Lấy lịch hẹn tuần sau',
+      data: nextAppointmentLogData
+    });
+  } catch (error: any) {
+    console.error('Lỗi lấy lịch hẹn tuần sau:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Lỗi server khi lấy lịch hẹn tuần sau'
+    });
+  }
+};
 
 
 export default {
@@ -491,5 +518,7 @@ export default {
   cancelAppointment,
   completeAppointment,
   checkTrainerAvailability,
-  rescheduleAppointment
+  rescheduleAppointment,
+  getUpcomingAppointments,
+  getMemberSchedule
 };
