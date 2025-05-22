@@ -1,11 +1,84 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
-import Membership, { IMembership } from '../../models/Membership';
-
+import Membership, { IMembership } from '~/models/Membership';
+import PackageDetail from '~/models/PackageDetail';
+import membershipService from '~/services/user/membershipService';
 interface AuthRequest extends Request {
   userId?: string;
   userRole?: string;
 }
+
+/**
+ * Lấy danh sách các địa điểm mà hội viên có thể tập luyện dựa trên các gói đã đăng ký
+ */
+export const getMemberTrainingLocations = asyncHandler(async (req: AuthRequest, res: Response) => {
+  try {
+    const memberId = req.userId;
+
+    if (!memberId) {
+      res.status(401).json({
+        success: false,
+        message: 'Bạn cần đăng nhập để xem thông tin địa điểm tập luyện'
+      });
+      return;
+    }
+
+    // Lấy tất cả các membership đang active của hội viên
+    const memberships = await Membership.find({ 
+      member_id: memberId,
+      status: 'active' // Chỉ lấy các gói đang active
+    }).populate({
+      path: 'package_id',
+      select: '_id'
+    });
+
+    if (!memberships || memberships.length === 0) {
+      res.status(200).json({
+        success: true,
+        message: 'Bạn chưa đăng ký gói tập nào',
+        data: []
+      });
+      return;
+    }
+
+    // Lấy tất cả package_id từ memberships
+    const packageIds = memberships.map(membership => membership.package_id._id);
+
+    // Lấy tất cả PackageDetails dựa trên packageIds
+    const packageDetails = await PackageDetail.find({
+      package_id: { $in: packageIds },
+      status: 'active'
+    });
+
+    // Tạo một Set để lưu trữ các location duy nhất
+    const uniqueLocations = new Set<string>();
+
+    // Lặp qua packageDetails để lấy training_areas
+    packageDetails.forEach(detail => {
+      if (detail.training_areas && detail.training_areas.length > 0) {
+        detail.training_areas.forEach(location => {
+          uniqueLocations.add(location);
+        });
+      }
+    });
+
+    // Chuyển Set thành Array
+    const locations = Array.from(uniqueLocations);
+
+    res.status(200).json({
+      success: true,
+      count: locations.length,
+      data: locations
+    });
+   
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách địa điểm tập luyện:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi server khi xử lý yêu cầu'
+    });
+  }
+});
 
 /**
  * Lấy danh sách gói tập đã đăng ký của hội viên
@@ -189,9 +262,7 @@ export const resumeMembership = asyncHandler(async (req: AuthRequest, res: Respo
   }
 });
 
-/**
- * Lấy danh sách gói tập đã đăng ký của hội viên
- */
+//Lấy danh sách gói tập đã đăng ký của hội viên
 export const getMembershipsActive = asyncHandler(async (req: AuthRequest, res: Response) => {
   try {
     const memberId = req.userId;
@@ -224,3 +295,43 @@ export const getMembershipsActive = asyncHandler(async (req: AuthRequest, res: R
     });
   }
 });
+
+//Lấy danh sách gói tập đã đăng ký của hội viên
+export const getInforMembershipDetails = asyncHandler(async (req: AuthRequest, res: Response) => {
+  try {
+    const memberId = req.userId;
+
+    if (!memberId) {
+      res.status(401).json({
+        success: false,
+        message: 'Bạn cần đăng nhập để xem thông tin hội viên '
+      });
+      return;
+    }
+
+    const inforMembershipDetails = await membershipService.getMembershipDetails(memberId)
+    res.status(200).json({
+      success: true,
+      data: inforMembershipDetails
+    });
+   
+  } catch (error) {
+    console.error('Lỗi khi  lấy thông tin gói tập hội viên:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi server khi xử lý yêu cầu'
+    });
+  }
+});
+
+export default {
+  getInforMembershipDetails,
+  getMembershipsActive,
+  resumeMembership,
+  pauseMembership,
+  updateMembershipStatus,
+  getMembershipById,
+  getMemberships,
+  getMemberTrainingLocations
+};
+
