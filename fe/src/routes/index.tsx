@@ -3,6 +3,7 @@ import React from "react";
 import { useRoutes } from "react-router-dom";
 import Layout from "~/compoments/layout/Layout";
 import publicRoutes from "./publicRoutes";
+import userRoutes from "./userRoutes";
 
 const Routes = () => {
   // Sử dụng useRoutes hook để định nghĩa routes
@@ -12,7 +13,7 @@ const Routes = () => {
       element: <Layout />,
       children: publicRoutes,
     },
- 
+      userRoutes,
   ]);
 
   return element;
