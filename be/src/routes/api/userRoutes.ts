@@ -3,10 +3,13 @@ import { authenticateJWT } from '~/middlewares/auth';
 import memberController from '~/controllers/user/memberController';
 import membershipController from '~/controllers/user/membershipController';
 import appointmentController from '~/controllers/user/appointmentController';
-
+import workoutController from '~/controllers/user/workoutController';
+import progressController from '~/controllers/user/progressController';
 //valid
 import { memberUpdateValidationRules } from '~/utils/validators/memberValidator';
 import { registerPackage } from '~/controllers/user/packageController';
+import { updateWorkoutScheduleStatusValidator, workoutScheduleValidator } from '~/utils/validators/workoutValidator';
+import { bodyMetricsValidationRules } from '~/utils/validators/progressValidator';
 const router = express.Router();
 router.use(authenticateJWT);// All these routes require authentication
 
@@ -37,3 +40,31 @@ router.delete('/:appointmentId/cancel', appointmentController.cancelAppointment)
 router.put('/:appointmentId/complete', appointmentController.completeAppointment);
 router.put('/:appointmentId/reschedule', appointmentController.rescheduleAppointment); // Đổi lịch hẹn
 router.post('/appointments/check-availability', appointmentController.checkTrainerAvailability); // Kiểm tra lịch trống của huấn luyện viên
+
+//lịch tập cá nhân
+
+router.post(
+  '/workout/schedules',workoutScheduleValidator, workoutController.createWorkoutSchedule);// Tạo lịch tập cá nhân
+router.get('/workout/schedules', workoutController.getMemberWorkoutSchedules);// Lấy danh sách lịch tập
+router.get('/workout/schedules/:scheduleId', workoutController.getWorkoutScheduleById);// Lấy chi tiết lịch tập
+router.patch(
+  '/workout/schedules/:scheduleId/status',
+  updateWorkoutScheduleStatusValidator, workoutController.updateWorkoutScheduleStatus);
+
+router.get('/workout/weekly', workoutController.getWeeklyWorkoutStats);
+router.get('/workout/monthly-comparison', workoutController.getMonthComparisonStats);
+router.get('/workout/last-7-days', workoutController.getLast7DaysWorkouts);
+router.get('/workout/next-week', workoutController.getUpcomingWorkouts);
+
+// Progress Tracking Routes
+router.get('/progress/metrics/latest', progressController.getLatestBodyMetrics); // Lấy chỉ số cơ thể mới nhất
+router.get('/progress/metrics/initial', progressController.getInitialBodyMetrics); // Lấy chỉ số cơ thể ban đầu
+router.get('/progress/metrics/previous-month', progressController.getPreviousMonthBodyMetrics); // Lấy chỉ số cơ thể tháng trước
+router.get('/progress/metrics/comparison', progressController.getBodyMetricsComparison); // Lấy so sánh chỉ số cơ thể
+router.post('/progress/metrics', bodyMetricsValidationRules(), progressController.updateBodyMetrics); // Cập nhật chỉ số cơ thể
+router.get('/progress/stats/monthly', progressController.getBodyStatsProgressByMonth); // Lấy tiến độ chỉ số cơ thể theo tháng
+router.get('/progress/radar', progressController.getFitnessRadarData); // Lấy dữ liệu radar thể lực
+router.get('/progress/metrics/changes',  progressController.calculateBodyMetricsChange); // Tính toán thay đổi chỉ số cơ thể
+router.get('/progress/monthly-body-metrics',  progressController.getFormattedMonthlyBodyMetrics);
+
+export default router;
