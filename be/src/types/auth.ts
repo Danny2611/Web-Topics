@@ -1,3 +1,4 @@
+import { Request } from 'express';
 export interface JwtPayload {
   userId: string;       // ID của người dùng
   role: string,
@@ -6,4 +7,9 @@ export interface JwtPayload {
   exp?: number;         // Thời điểm token hết hạn (Expires At - UNIX timestamp)
   iss?: string;         // Người cấp phát token (Issuer)
   aud?: string;         // Người nhận token (Audience)
+}
+
+export interface AuthRequest extends Request {
+  userId?: string;
+  userRole?: string;
 }
