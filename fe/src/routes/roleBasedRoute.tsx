@@ -44,7 +44,7 @@ const RoleBasedRoute: React.FC<RoleBasedRouteProps> = ({ allowedRoles }) => {
           <a
             href={
               userRole === "67c024616b4448e1eab6a861"
-                ? "/admin/dashboard"
+                ? "admin/members"
                 : "/user/dashboard"
             }
             className="mt-4 inline-block text-blue-600 underline"

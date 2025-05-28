@@ -4,6 +4,7 @@ import { useRoutes } from "react-router-dom";
 import Layout from "~/compoments/layout/Layout";
 import publicRoutes from "./publicRoutes";
 import userRoutes from "./userRoutes";
+import adminRoutes from "./adminRoutes";
 
 const Routes = () => {
   // Sử dụng useRoutes hook để định nghĩa routes
@@ -14,6 +15,7 @@ const Routes = () => {
       children: publicRoutes,
     },
       userRoutes,
+      adminRoutes,
   ]);
 
   return element;
