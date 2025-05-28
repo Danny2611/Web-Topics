@@ -1,18 +1,29 @@
+//src/user/paymentController
+
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { HydratedDocument } from 'mongoose';
 import mongoose, { Document, Schema, Types } from 'mongoose';
-import MoMoPaymentService from '../../services/momoPaymentService';
-import Package from '../../models/Package';
-import Payment from '../../models/Payment';
-import Membership, { IMembership } from '../../models/Membership';
-import Member from '../../models/Member';
-import { validatePaymentRequest } from '../../utils/validators/paymentValidator';
+import MoMoPaymentService from '~/services/momoPaymentService';
+import Package from '~/models/Package';
+import Payment from '~/models/Payment';
+import Membership, { IMembership } from '~/models/Membership';
+import Member from '~/models/Member';
+import Promotion from '~/models/Promotion';
+import { validatePaymentRequest } from '~/utils/validators/paymentValidator';
 
 interface AuthRequest extends Request {
   userId?: string;
   userRole?: string;
 }
+
+    interface AppliedPromotion {
+      promotion_id: mongoose.Types.ObjectId;
+      name: string;
+      discount: number;
+      original_price: number;
+      discounted_price: number;
+    }
 
 /**
  * Khởi tạo thanh toán MoMo cho gói tập
@@ -66,11 +77,35 @@ export const createMoMoPayment = asyncHandler(async (req: AuthRequest, res: Resp
       status: { $in: ['pending','expired'] }
     });
 
+    // Kiểm tra khuyến mãi đang áp dụng cho gói tập
+    const now = new Date();
+    const promotion = await Promotion.findOne({
+      applicable_packages: new mongoose.Types.ObjectId(packageId),
+      status: 'active',
+      start_date: { $lte: now },
+      end_date: { $gte: now }
+    });
+
+    let finalPrice = packageInfo.price;
+    let appliedPromotion: AppliedPromotion | null = null;
+    
+    if (promotion) {
+      const discountAmount = (packageInfo.price * promotion.discount) / 100;
+      finalPrice = Math.round(packageInfo.price - discountAmount);
+      appliedPromotion = {
+        promotion_id: promotion._id as mongoose.Types.ObjectId,
+        name: promotion.name,
+        discount: promotion.discount,
+        original_price: packageInfo.price,
+        discounted_price: finalPrice
+      };
+    }
+
     // Tạo thông tin thanh toán
     const paymentData = {
       packageId,
       memberId,
-      amount: packageInfo.price,
+      amount: finalPrice,
       orderInfo: `Thanh toán gói ${packageInfo.name} - FittLife`
     };
 
@@ -90,10 +125,12 @@ export const createMoMoPayment = asyncHandler(async (req: AuthRequest, res: Resp
     const payment = new Payment({
       member_id: memberId,
       package_id: packageId,
-      amount: packageInfo.price,
+      amount: finalPrice,
+      original_amount: packageInfo.price,
       status: 'pending',
-      paymentMethod: 'momo',
+      paymentMethod: 'undefined',
       transactionId: momoResponse.orderId,
+      promotion: appliedPromotion,
       paymentInfo: {
         requestId: momoResponse.requestId,
         payUrl: momoResponse.payUrl,
@@ -127,6 +164,9 @@ export const createMoMoPayment = asyncHandler(async (req: AuthRequest, res: Resp
         paymentId: payment._id,
         payUrl: momoResponse.payUrl,
         amount: momoResponse.amount,
+        originalAmount: packageInfo.price,
+        discount: promotion ? promotion.discount : 0,
+        promotionApplied: promotion ? true : false,
         transactionId: momoResponse.orderId,
         expireTime: Date.now() + 10 * 60 * 1000 // 10 phút
       }
@@ -144,7 +184,7 @@ export const createMoMoPayment = asyncHandler(async (req: AuthRequest, res: Resp
  * Xử lý redirect từ MoMo về trang xác nhận
  */
 export const momoRedirectCallback = asyncHandler(async (req: Request, res: Response) => {
-  console.log('🔄 MoMo Redirect Callback Received:', req.query); // 👀 Log dữ liệu nhận từ MoMo
+  // console.log('🔄 MoMo Redirect Callback Received:', req.query); // 👀 Log dữ liệu nhận từ MoMo
   try {
     const { orderId } = req.query;
     // Chuyển resultCode thành số và so sánh
@@ -187,7 +227,7 @@ export const momoIpnCallback = asyncHandler(async (req: Request, res: Response) 
 
     // Kiểm tra mã kết quả từ MoMo
     if (callbackData.resultCode !== 0) {
-      console.log('MoMo IPN Callback Failed:', callbackData);
+      // console.log('MoMo IPN Callback Failed:', callbackData);
       // Cập nhật trạng thái thanh toán trong DB
       await Payment.findOneAndUpdate(
         { transactionId: callbackData.orderId },
@@ -217,7 +257,7 @@ export const momoIpnCallback = asyncHandler(async (req: Request, res: Response) 
 
     // Giải mã extraData
     const extraData = MoMoPaymentService.decodeExtraData(callbackData.extraData);
-    console.log('Decoded Extra Data:', extraData);
+    // console.log('Decoded Extra Data:', extraData);
 
     // Kiểm tra các trường bắt buộc của extraData
     if (!extraData.packageId || !extraData.memberId) {
@@ -234,6 +274,7 @@ export const momoIpnCallback = asyncHandler(async (req: Request, res: Response) 
       { transactionId: callbackData.orderId },
       { 
         status: 'completed',
+        paymentMethod: callbackData.payType,
         paymentInfo: { ...callbackData }
       },
       { new: true }
@@ -454,3 +495,10 @@ export const getPaymentById = asyncHandler(async (req: AuthRequest, res: Respons
 });
 
 
+export default {
+  createMoMoPayment, 
+  momoIpnCallback, 
+  momoRedirectCallback, 
+  getPaymentById, 
+  getPaymentStatus 
+}
