@@ -15,6 +15,9 @@ import ManageAppointments from "~/pages/user/appoinments/ManageAppointments";
 import RescheduleAppointmentPage from "~/pages/user/appoinments/RescheduleAppointmentPage";
 import PersonalSchedulePage from "~/pages/user/schedules/PersonalSchedulePage";
 import CreateWorkoutPage from "~/pages/user/workoutSchedule/CreateWorkoutPage";
+import TransactionHistory from "~/pages/user/transactions/TransactionHistory";
+import ProgressPage from "~/pages/user/progress/ProgressPage";
+import Dashboard from "~/pages/user/Dashboard";
 
 const userRoutes = {
   path: "user",
@@ -23,7 +26,7 @@ const userRoutes = {
     {
       element: <DashboardLayout/>,
       children: [
-        // { path: "dashboard", element: <Dashboard /> },
+        { path: "dashboard", element: <Dashboard /> },
         { path: "profile", element: <ProfilePage /> },
         { path: "change-password", element: <ChangePassword /> },
         { path: "packages", element: <PackagesPage /> },
@@ -51,6 +54,12 @@ const userRoutes = {
         { path: "my-schedule", element: <PersonalSchedulePage /> },
           //workoutSchedule:
         { path: "workout", element: <CreateWorkoutPage /> },
+
+          //transactions
+        { path: "transactions", element: <TransactionHistory /> },
+
+        { path: "progress", element: <ProgressPage /> },
+
       ],
     },
   ],
