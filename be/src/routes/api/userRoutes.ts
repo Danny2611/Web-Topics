@@ -10,7 +10,14 @@ import { memberUpdateValidationRules } from '~/utils/validators/memberValidator'
 import { registerPackage } from '~/controllers/user/packageController';
 import { updateWorkoutScheduleStatusValidator, workoutScheduleValidator } from '~/utils/validators/workoutValidator';
 import { bodyMetricsValidationRules } from '~/utils/validators/progressValidator';
+import transactionController from '~/controllers/user/transactionController';
+import paymentController from '~/controllers/user/paymentController';
 const router = express.Router();
+
+//momo
+router.get('/payment/momo/callback', paymentController.momoRedirectCallback);// Route redirect từ MoMo sau khi thanh toán
+router.post('/momo/ipn', paymentController.momoIpnCallback);// Route callback từ MoMo (IPN)
+
 router.use(authenticateJWT);// All these routes require authentication
 
 // Member profile routes
@@ -66,5 +73,17 @@ router.get('/progress/stats/monthly', progressController.getBodyStatsProgressByM
 router.get('/progress/radar', progressController.getFitnessRadarData); // Lấy dữ liệu radar thể lực
 router.get('/progress/metrics/changes',  progressController.calculateBodyMetricsChange); // Tính toán thay đổi chỉ số cơ thể
 router.get('/progress/monthly-body-metrics',  progressController.getFormattedMonthlyBodyMetrics);
+
+
+// transaction
+router.get('/transactions', transactionController.getAllMemberTransactions); // lấy danh sách giao dịch
+router.post('/transaction-details', transactionController.getTransactionById) // lấy giao dịch  details
+router.get('/transaction/success', transactionController.getRecentSuccessfulTransactions) // lấy giao dịch  details
+
+
+// Payment routes
+router.post('/momo/create', paymentController.createMoMoPayment);// Route tạo thanh toán MoMo
+router.get('/payments/:paymentId/status',  paymentController.getPaymentStatus);// Kiểm tra trạng thái thanh toán (cho frontend polling)
+router.get('/:paymentId', paymentController.getPaymentById);// Route lấy thông tin thanh toán
 
 export default router;
