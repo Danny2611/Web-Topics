@@ -2,13 +2,14 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 
 
 
+
 // Interface cho Payment
 export interface IPayment extends Document {
   member_id: Types.ObjectId;
   package_id: Types.ObjectId;
   amount: number;
   status: 'pending' | 'completed' | 'failed' | 'cancelled';
-  paymentMethod: 'momo' | 'cash' | 'bank_transfer';
+  paymentMethod: 'qr' | 'credit' | 'napas' | 'undefined';
   paymentInfo?: any;
   transactionId?: string;
   created_at: Date;
@@ -22,7 +23,7 @@ const paymentSchema: Schema = new Schema({
   status: { type: String, enum: ['pending', 'completed', 'failed', 'cancelled'], default: 'pending' },
   paymentMethod: { 
     type: String,
-    enum: ['momo', 'cash', 'bank_transfer'],
+    enum: ['qr', 'credit', 'napas', 'undefined'],
     required: true 
   },
   transactionId: { type: String },
