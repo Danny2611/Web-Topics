@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
-import { useSidebar } from "~/contexts/SidebarContext";
+import { useSidebar } from "../../contexts/SidebarContext";
 
 // Import các icon từ react-icons
 import {
@@ -8,7 +8,6 @@ import {
   FiUser,
   FiCalendar,
   FiChevronDown,
-
   FiCreditCard,
   FiClock,
   FiBell,
@@ -81,13 +80,14 @@ const othersItems: NavItem[] = [
   {
     icon: <FiBell className="h-5 w-5" />,
     name: "Thông báo",
-    path: "/notifications",
+    path: "/user/settings/notifications",
   },
   {
     icon: <FiInfo className="h-5 w-5" />,
     name: "Thông tin gym",
-    path: "/gym-info",
+    path: "/contact",
   },
+ 
 ];
 
 const Sidebar: React.FC = () => {
@@ -302,30 +302,32 @@ const Sidebar: React.FC = () => {
         <Link to="/" className="flex items-center">
           {isExpanded || isHovered || isMobileOpen ? (
             <div className="flex items-center">
-              <img
-                className="h-8 w-8 dark:hidden"
-                src="/images/logo/logo-icon.svg"
-                alt="Logo"
-              />
-              <img
-                className="hidden h-8 w-8 dark:block"
-                src="/images/logo/logo-icon-dark.svg"
-                alt="Logo"
-              />
-              <span className="ml-3 text-xl font-bold text-gray-900 dark:text-white">
-                GymFlex
+              <div className="flex-shrink-0">
+                <img
+                  className="h-12 w-12 dark:hidden"
+                  src="/logo-main-2.png"
+                  alt="Logo"
+                />
+                <img
+                  className="hidden h-12 w-12 dark:block"
+                  src="/logo-main-2.png"
+                  alt="Logo"
+                />
+              </div>
+              <span className="ml-3 text-lg font-bold leading-tight text-blue-600 dark:text-blue-400">
+                Quản lí thông tin
               </span>
             </div>
           ) : (
-            <div>
+            <div className="flex-shrink-0">
               <img
-                className="h-8 w-8 dark:hidden"
-                src="/images/logo/logo-icon.svg"
+                className="h-10 w-10 dark:hidden"
+                src="/logo-main-2.png"
                 alt="Logo"
               />
               <img
-                className="hidden h-8 w-8 dark:block"
-                src="/images/logo/logo-icon-dark.svg"
+                className="hidden h-10 w-10 dark:block"
+                src="/logo-main-2.png"
                 alt="Logo"
               />
             </div>

@@ -10,6 +10,10 @@ import PackageManagement from "~/pages/admin/packages/PackageManagement";
 import TrainerManagement from "~/pages/admin/trainers/TrainerManagement";
 import AppointmentManagement from "~/pages/admin/appointments/AppointmentManagement";
 import PaymentManagement from "~/pages/admin/payments/PaymentManagement";
+import PromotionManagement from "~/pages/admin/Promotions/PromotionManagement";
+import Dashboard from "~/pages/admin/Reports/Dashboard";
+import MembershipReport from "~/pages/admin/Reports/MembershipReport";
+import RevenueReport from "~/pages/admin/Reports/RevenueReport";
 
 
 const adminRoutes = {
@@ -26,6 +30,12 @@ const adminRoutes = {
         { path: "trainers", element: <TrainerManagement /> },
         { path: "appointments", element: <AppointmentManagement /> },
         { path: "transactions", element: <PaymentManagement /> },
+        { path: "promotions", element: <PromotionManagement /> },
+
+        
+        { path: "reports/dashboard", element: <Dashboard /> },
+        { path: "reports/members", element: <MembershipReport /> },
+        { path: "reports/revenues", element: <RevenueReport /> },
       ],
     },
   ],
