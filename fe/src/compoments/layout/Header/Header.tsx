@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import { BsFillTelephoneFill } from "react-icons/bs";
-import { IoMdMail } from "react-icons/io";
+
 import {
   FaFacebookF,
   FaTwitter,
@@ -10,11 +10,11 @@ import {
   FaMapMarkerAlt,
 } from "react-icons/fa";
 import classNames from "classnames";
-import { useScrollPosition } from "../../../hooks/useScrollPosition";
+import { useScrollPosition } from "~/hooks/useScrollPosition";
 import Button from "../../common/Button";
-
-import { useAuth } from "../../../contexts/AuthContext";
 import RoleBasedDropdown from "~/compoments/dashboard/header/RoleBasedDropdown";
+import { useAuth } from "~/contexts/AuthContext";
+import { ThemeToggleButton } from "~/compoments/dashboard/common/ThemeToggleButton";
 
 interface NavItem {
   name: string;
@@ -51,7 +51,8 @@ const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const scrollPosition = useScrollPosition();
-  const { isAuthenticated, user } = useAuth();
+  //  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -116,12 +117,19 @@ const Header: React.FC = () => {
               >
                 Join Membership
               </Link>
-              <Link
+              {/* <Link
                 to="/#"
                 className="text-sm transition-colors hover:text-blue-600"
               >
                 Get Theme →
-              </Link>
+              </Link> */}
+        <div className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-full">
+  <ThemeToggleButton />
+</div>
+
+
+
+
             </div>
           </div>
         </div>
@@ -133,7 +141,7 @@ const Header: React.FC = () => {
         {!mobileMenuOpen && (
           <Link to="/" className="z-10">
             <img
-              src="/images/logo-main.png"
+              src="/logo-main-2.png"
               alt="FittLife"
               className="h-12 md:h-16"
               style={{
